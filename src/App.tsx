@@ -1,10 +1,11 @@
+import * as React from 'react'
 import { HashRouter as Router, Switch, Route } from "react-router-dom";
 import { Web3Provider } from "@ethersproject/providers";
 import { Web3ReactProvider, createWeb3ReactRoot } from "@web3-react/core";
 import Web3ReactManager from "@/components/Web3ReactManager/index";
 
 import { NetworkContextName } from "@/config";
-
+// import { ChakraProvider } from '@chakra-ui/react'
 import Home from "@/page/home/Home";
 import Account from "@/page/account/Account";
 export function getLibrary(provider: any): Web3Provider {
@@ -16,6 +17,7 @@ const Web3ProviderNetwork = createWeb3ReactRoot(NetworkContextName);
 
 function App() {
     return (
+      // <ChakraProvider>
         <Web3ReactProvider getLibrary={getLibrary}>
             <Web3ProviderNetwork getLibrary={getLibrary}>
                 <Router>
@@ -32,6 +34,7 @@ function App() {
                 </Router>
             </Web3ProviderNetwork>
         </Web3ReactProvider>
+        // </ChakraProvider>
     );
 }
 

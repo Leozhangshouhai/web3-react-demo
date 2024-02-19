@@ -11,7 +11,8 @@ import { Web3Modal } from "@web3modal/standalone";
 import "./index.less";
 
 // 1. Get projectID at https://cloud.walletconnect.com
-const projectId = "otTTT123...";
+// 项目ID
+const projectId = "0409374e9ab05fad1a506d655f2be01c"
 if (!projectId) {
   throw new Error("You need to provide NEXT_PUBLIC_PROJECT_ID env variable");
 }
@@ -24,12 +25,17 @@ const web3Modal = new Web3Modal({
 });
 export default function Home() {
   const history = useHistory();
+ 
   const [client, setClient] = useState<AuthClient | null>();
   const [hasInitialized, setHasInitialized] = useState(false);
+  const [clickWalletIng, setClickWalletIng] = useState(false);
   const [uri, setUri] = useState<string>("");
-  const [address, setAddress] = useState<string>("");
+  const [address, setAddress] = useState<string>(window.userAddress||'');
   const connectWallet = useCallback(() => {
+    if(clickWalletIng)return
     if (!client) return;
+    
+    setClickWalletIng(true)
     client
       .request({
         aud: window.location.href,
@@ -41,7 +47,8 @@ export default function Home() {
       })
       .then(({ uri }) => {
         if (uri) {
-          console.log('uri-------',uri)
+          console.log('uri-------',uri);
+          setUri(uri)
         }
       });
   }, [client]);
@@ -57,29 +64,59 @@ export default function Home() {
       },
     })
       .then((authClient) => {
+        console.log('-------------',authClient)
         setClient(authClient);
-        setHasInitialized(true);
       })
       .catch(console.error);
   }, []);
   useEffect(() => {
     async function handleOpenModal() {
       if (uri) {
+        console.log('uriuriuri-----',uri)
         await web3Modal.openModal({
           uri,
           standaloneChains: ["eip155:1"],
         });
+        setClickWalletIng(false)
       }
     }
     handleOpenModal();
   }, [uri]);
   const [view, changeView] = useState<"default" | "qr" | "signedIn">("default");
   useEffect(() => {
+      console.log('addressaddressaddress',address)
     if (address) {
+      window.userAddress=address
       web3Modal.closeModal();
       changeView("signedIn");
     }
   }, [address, changeView]);
+  useEffect(() => {
+    if (!client) return;
+    client.on("auth_response", ({ params }) => {
+      if ("code" in params) {
+        console.error(params);
+        return web3Modal.closeModal();
+      }
+      if ("error" in params) {
+        console.error(params.error);
+        if ("message" in params.error) {
+          // toast({
+          //   status: "error",
+          //   title: params.error.message,
+          // });
+        }
+        return web3Modal.closeModal();
+      }
+      // toast({
+      //   status: "success",
+      //   title: "Auth request successfully approved",
+      //   colorScheme: "whatsapp",
+      // });
+      console.log('paramsparamsparams',params)
+      setAddress(params.result.p.iss.split(":")[4]);
+    });
+  }, [client]);
 
   
   return (
@@ -87,14 +124,18 @@ export default function Home() {
       <div className="top-box">
         <div className="header-box">
           <span className="title"> HOME</span>
-          <span className="wallet-box" onClick={() => { connectWallet() }}>
+          <span className={`wallet-box  ${clickWalletIng ?' isConnecting' :''}`} onClick={() => { 
+            if(!address){
+              connectWallet() 
+            }
+           }}>
             <img
               draggable="false"
               className="left-icon"
               src={walletIcon}
               alt=""
             />
-            <span className="text">login</span>
+            <span className="text">{ address ?  `${address.slice(0,4)}....${address.slice(-4)}`:'login'}</span>
           </span>
         </div>
         <div className="banner-box">
