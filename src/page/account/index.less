@@ -1,0 +1,180 @@
+
+@padding : 18px;
+@padding-outer:25px;
+@box-padding:30px;
+@btn-padding : 8px;
+@btn-padding-lf : 10px;
+@main-blue:#402786;
+.task-box{
+  min-height: 100vh;
+  position: relative;
+  background-color: #1F2036;
+  display: flex;
+  flex-direction: column;
+   .border-r {
+    border-radius: 40px 40px 0 0;
+    overflow: hidden;
+   } 
+
+  .top-box{
+    .bg-box{
+      height: 407px;
+      width: 100%;
+      background-image: url("@/assets/task-bg.png");
+      background-size: 100%;
+      background-repeat: no-repeat;
+      .header{
+          display: flex;
+          align-items: center;
+          padding: @padding-outer;
+          justify-content: space-between;
+          padding-top: 18px;
+          line-height: 23px;
+          img{
+            width: 48px;
+            height: auto;
+          }
+          .name{
+            font-size: 20px;
+            font-weight: 500;
+            color: white;
+          }
+          .bank{
+            width: 48px;height: 48px;
+          }
+      }
+    }
+  }
+  .bottom-box {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin-top: -10px;
+    background-color: transparent;
+    .sign-box {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background-color: #1f2036;
+      .sign-box-top{
+      
+        margin-top: -5px;
+      
+        padding-top: 15px;
+        .day-box{
+          color: white;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding:20px @padding-outer;
+          b{
+            color: @main-blue;
+          }
+          .btn{
+            height: 42px;
+            width: 96px;
+            line-height: 42px;
+            font-size: 18px;
+            text-align: center;
+            background-color: @main-blue;
+            border-radius: 40px;
+          }
+        }
+        .action-box{
+          padding:0 @padding-outer;
+          margin-bottom: 20px;
+          display: flex;
+          justify-content: space-around;
+          .item-box{
+            display: inline-block;
+          text-align: center;
+
+            .item-outer{
+              padding: 11px 7px;
+              border-radius: 6px;
+              background-color: rgba(109, 80, 224, 0.10);
+              display: inline-block;
+              .item{
+                font-size: 12px;
+                border-radius: 24px;
+                width: 24px;
+                height: 24px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                background-color: @main-blue;
+              }
+             
+            }
+            .item-outer-active{
+              background-color: rgba(64, 39, 134, 1);
+              .item{
+                color: black !important;
+                background-color: white !important;
+              }
+            }
+            .des{
+              color: white;
+              font-size: 12px;
+              margin-top: 10px;
+            }
+            
+          }
+          
+        }
+
+      }
+      .sign-box-bottom{
+        flex: 1;
+        background-color: #27273F;
+        padding:30px @padding-outer;
+        padding-bottom: 80px;
+        .sub-title{
+          font-size: 20px;
+          font-weight: bold;
+          margin-bottom: 20px;
+          color: #fff;
+        }
+        .task-line-box{
+          .line-item{
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            .left{
+              img{
+                width: 48px;
+                height: auto;
+              }
+            }
+            .middle{
+             
+              flex: 1;
+              padding:0 5px;
+              .title{
+                color: white;
+                line-height: 19px;
+                font-size: 16px;font-weight: 500;
+              }
+              .desc{
+                margin-top: 6px;
+                font-size: 12px;
+                line-height: 14px;
+                color: rgba(147, 149, 164, 0.50);
+              }
+            }
+            .right{
+              background-color: rgba(64, 39, 134, 1);
+              text-align: center;
+              padding: 7px 16px;
+              font-size: 12px;
+              color: white;
+              border-radius: 72px;
+            }
+          }
+        }
+      }
+    }
+  }
+}
