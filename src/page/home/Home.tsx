@@ -5,120 +5,82 @@ import ethIcon from "@/assets/eth.png";
 import chatIcon from "@/assets/chat.png";
 import TabBar from "@/components/tabbar";
 import { useHistory } from "react-router-dom";
-  import WalletConnect from "@walletconnect/client";
-
-
-  import QRCodeModal from "@walletconnect/qrcode-modal";
-
+import AuthClient, { generateNonce } from "@walletconnect/auth-client";
+import { useCallback, useEffect, useState } from "react";
+import { Web3Modal } from "@web3modal/standalone";
 import "./index.less";
 
+// 1. Get projectID at https://cloud.walletconnect.com
+const projectId = "otTTT123...";
+if (!projectId) {
+  throw new Error("You need to provide NEXT_PUBLIC_PROJECT_ID env variable");
+}
+
+
+// 2. Configure web3Modal
+const web3Modal = new Web3Modal({
+  projectId,
+  walletConnectVersion: 2,
+});
 export default function Home() {
   const history = useHistory();
-
-  const connectWallet = async () => {
-    console.log('33333----333')
-    // 初始化WalletConnectProvider
-    let connector = new WalletConnect({
-      bridge: "https://bridge.walletconnect.org", // Required
-      qrcodeModal: QRCodeModal,
+  const [client, setClient] = useState<AuthClient | null>();
+  const [hasInitialized, setHasInitialized] = useState(false);
+  const [uri, setUri] = useState<string>("");
+  const [address, setAddress] = useState<string>("");
+  const connectWallet = useCallback(() => {
+    if (!client) return;
+    client
+      .request({
+        aud: window.location.href,
+        domain: window.location.hostname.split(".").slice(-2).join("."),
+        chainId: "eip155:1",
+        type: "eip4361",
+        nonce: generateNonce(),
+        statement: "Sign in with wallet.",
+      })
+      .then(({ uri }) => {
+        if (uri) {
+          console.log('uri-------',uri)
+        }
+      });
+  }, [client]);
+  useEffect(() => {
+    AuthClient.init({
+      relayUrl:"wss://relay.walletconnect.com",
+      projectId:projectId!,
+      metadata: {
+        name: "react-dapp-auth",
+        description: "React Example Dapp for Auth",
+        url: window.location.host,
+        icons: [],
+      },
     })
-    console.log('33333----333connectorconnector',connector)
-    connector.on("connect", (error, payload) => {
-      // 链接
-      if (error) {
-        throw error;
+      .then((authClient) => {
+        setClient(authClient);
+        setHasInitialized(true);
+      })
+      .catch(console.error);
+  }, []);
+  useEffect(() => {
+    async function handleOpenModal() {
+      if (uri) {
+        await web3Modal.openModal({
+          uri,
+          standaloneChains: ["eip155:1"],
+        });
       }
-
-      // Get provided accounts and chainId
-      console.log('connecpayloadpayloadpayloadpayloadpayloadpayloadpayload')
-      console.log(payload)
-      // address = ...
-
-      // Tip localstorage will add walletconnect
-    });
-
-    connector.on("session_update", (error, payload) => {
-      // 更新
-      if (error) {
-        throw error;
-      }
-
-      // Get updated accounts and chainId
-      console.log('session_updatesession_updatesession_updatesession_updatesession_updatesession_updatesession_update')
-      console.log(payload)
-    });
-
-    connector.on("session_request", (error, payload) => {
-      // 请求
-      if (error) {
-        throw error;
-      }
-
-      // Get updated accounts and chainId
-      console.log('session_requestsession_requestsession_requestsession_requestsession_request')
-      console.log(payload)
-    });
-
-    connector.on("wc_sessionRequest", (error, payload) => {
-      if (error) {
-        throw error;
-      }
-
-      // Get updated accounts and chainId
-      console.log('wc_sessionRequestwc_sessionRequestwc_sessionRequestwc_sessionRequestwc_sessionRequest')
-      console.log(payload)
-    });
-
-    connector.on("wc_sessionUpdate", (error, payload) => {
-      if (error) {
-        throw error;
-      }
-
-      // Get updated accounts and chainId
-      console.log('wc_sessionUpdatewc_sessionUpdatewc_sessionUpdatewc_sessionUpdatewc_sessionUpdate')
-      console.log(payload)
-    });
-
-    connector.on("call_request", (error, payload) => {
-      if (error) {
-        throw error;
-      }
-
-      // Get updated accounts and chainId
-      console.log('call_request')
-      console.log(payload)
-    });
-
-    connector.on("disconnect", (error, payload) => {
-      // 断开
-      if (error) {
-        throw error;
-      }
-
-      // Delete connector
-      console.log('Delete connector')
-      console.log(payload)
-    });
-    // 触发链接
-    if (!connector.connected) {
-      // create new session
-      await connector.createSession();
     }
-
-  };
-  const connectWallet2= async()=>{
-    const bridge = "https://bridge.walletconnect.org";
-    console.log('3333222223bridgebridge---',bridge)
-    // create new connector
-    const connector = new WalletConnect({ bridge, qrcodeModal: QRCodeModal });
-
-    console.log('3333331119999999999-',connector)
-    // check if already connected
-    if (!connector.connected) {
-      // create new session
-      await connector.createSession();
+    handleOpenModal();
+  }, [uri]);
+  const [view, changeView] = useState<"default" | "qr" | "signedIn">("default");
+  useEffect(() => {
+    if (address) {
+      web3Modal.closeModal();
+      changeView("signedIn");
     }
-  }
+  }, [address, changeView]);
+
   
   return (
     <div className="home-box">
