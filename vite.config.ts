@@ -4,6 +4,14 @@ import * as path from "path";
 // https://vitejs.dev/config/
 export default defineConfig({
     plugins: [react()],
+    define: {
+      global: 'globalThis',
+
+      // globals: {
+      // // 这个是解决打开walletconnect不会提示ws错误
+      //   globalThis: 'globalThis',
+      // },
+    },
     resolve: {
         alias: {
             "@": path.join(__dirname, "./src"),
@@ -31,5 +39,17 @@ export default defineConfig({
         },
       },
     },
+    build: {
+      rollupOptions: {
+        output: {
+          
+          // globals: {
+          //  // 这个是解决打包问题
+          //   globalThis: 'globalThis',
+          // },
+        }
+      }
+    },
+
     
 });
