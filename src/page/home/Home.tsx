@@ -8,11 +8,13 @@ import { useHistory } from "react-router-dom";
 import AuthClient, { generateNonce } from "@walletconnect/auth-client";
 import { useCallback, useEffect, useState } from "react";
 import { Web3Modal } from "@web3modal/standalone";
+import {projectId,metadata,relayUrl} from "@/constants/env"
+
 import "./index.less";
 
 // 1. Get projectID at https://cloud.walletconnect.com
 // 项目ID
-const projectId = "0409374e9ab05fad1a506d655f2be01c"
+
 if (!projectId) {
   throw new Error("You need to provide NEXT_PUBLIC_PROJECT_ID env variable");
 }
@@ -25,7 +27,7 @@ const web3Modal = new Web3Modal({
 });
 export default function Home() {
   const history = useHistory();
- 
+
   const [client, setClient] = useState<AuthClient | null>();
   const [hasInitialized, setHasInitialized] = useState(false);
   const [clickWalletIng, setClickWalletIng] = useState(false);
@@ -54,17 +56,12 @@ export default function Home() {
   }, [client]);
   useEffect(() => {
     AuthClient.init({
-      relayUrl:"wss://relay.walletconnect.com",
+      relayUrl,
       projectId:projectId!,
-      metadata: {
-        name: "react-dapp-auth",
-        description: "React Example Dapp for Auth",
-        url: window.location.host,
-        icons: [],
-      },
+      metadata,
     })
       .then((authClient) => {
-        console.log('-------------',authClient)
+        console.log('----2223333333---------',authClient)
         setClient(authClient);
       })
       .catch(console.error);
@@ -123,7 +120,7 @@ export default function Home() {
     <div className="home-box">
       <div className="top-box">
         <div className="header-box">
-          <span className="title"> HOME</span>
+          <span className="title" > 签名HOME</span>
           <span className={`wallet-box  ${clickWalletIng ?' isConnecting' :''}`} onClick={() => { 
             if(!address){
               connectWallet() 

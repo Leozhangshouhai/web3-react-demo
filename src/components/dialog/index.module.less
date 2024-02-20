@@ -1,0 +1,64 @@
+.dialog {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 100;
+
+  .content {
+    width: 520px;
+    padding: 20px 40px 30px 40px;
+    border-radius: 40px;
+    background-color: #131119;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    box-sizing: border-box;
+
+    .header {
+      margin-bottom: 14px;
+
+      .title {
+        font-family: "RB";
+        font-size: 20px;
+        font-weight: 900;
+        line-height: 26px;
+        color: #fff;
+      }
+
+      .close {
+        width: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        right: 40px;
+        top: 20px;
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+@media (max-width: 828px) {
+  .dialog {
+    box-sizing: border-box;
+
+    .content {
+      width: 360px;
+      padding: 20px;
+      border-radius: 20px;
+
+      .header {
+        .close {
+          right: 20px;
+          top: 15px;
+        }
+      }
+    }
+  }
+}

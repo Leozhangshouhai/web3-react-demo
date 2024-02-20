@@ -23,20 +23,14 @@ export default defineConfig({
       open: true,
       cors: true,
       proxy: {
-        "/api": {
-          // target: 'http://207.244.254.27:5020',
-          target: "https://www.spacex.date/",
-          // target: "https://bsc.spacex.date",
-          changeOrigin: true,
-          secure: false,
-        },
-        "/subapi": {
-          target: "https://www.spacex.date/",
-          // target: "https://bsc.spacex.date",
-          changeOrigin: true,
-          secure: false,
-          // rewrite: (path) => path.replace(/^\/goldBrick/, '/api2/goldBrick/')
-        },
+        // "/*": {
+        //   // target: 'http://207.244.254.27:5020',
+        //   target: "https://sepolia.optimism.io/",
+        //   // target: "https://bsc.spacex.date",
+        //   changeOrigin: true,
+        //   secure: false,
+        // },
+      
       },
     },
     build: {

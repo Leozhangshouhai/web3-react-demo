@@ -6,21 +6,21 @@ import bg from "@/assets/task-bg.png"
 import bgLeft from "@/assets/task-bg-left.png"
 import Xicon from "@/assets/xicon.png"
 import { useHistory } from 'react-router-dom'
+import moment from 'moment';
+
 export default function Home() {
   const history = useHistory();
   const [tableData, setTableData] = useState([
-    { text: '今天', index: 0 },
-    { text: '第一天', index: 1 },
-    { text: '第二天', index: 2 },
-    { text: '第三天', index: 3 },
-    { text: '第四天', index: 4 }, { text: '第五天', index: 5 }
-    , { text: '第六天', index: 6 }, { text: '第七天', index: 7 }
+    { text:  moment().format('MM-DD'), index: 0 },
+    { text: moment().add(1,'days').format('MM-DD'), index: 1 },
+    { text: moment().add(2,'days').format('MM-DD'), index: 2 },
+    { text: moment().add(3,'days').format('MM-DD'), index: 3 },
+    { text: moment().add(4,'days').format('MM-DD'), index: 4 }, { text: moment().add(5,'days').format('MM-DD'), index: 5 }
+    , { text: moment().add(6,'days').format('MM-DD'), index: 6 }, { text: moment().add(7,'days').format('MM-DD'), index: 7 }
   ]);
   const [mediaList, setMediaList] = useState([
     { title: '推特一', desc: '关注指定推特，可获得19Chat',status:0 },
-    { title: '推特一', desc: '关注指定推特，可获得19Chat',status:0 },
-    { title: '推特一', desc: '关注指定推特，可获得19Chat',status:0 },
-    { title: '推特一', desc: '关注指定推特，可获得19Chat',status:0 },
+    
   
   ]);
 
