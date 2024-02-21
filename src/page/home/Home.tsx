@@ -14,6 +14,7 @@ import axiosInstance from "@/service";
 import { userinfoApi, tokenPriceApi } from "@/service/api"
 import "./index.less";
 import { message } from 'antd';
+import {callContractMethod} from "@/service/callContract"
 // 1. Get projectID at https://cloud.walletconnect.com
 // 项目ID
 
@@ -38,13 +39,14 @@ export default function Home() {
   const [client, setClient] = useState<AuthClient | null>();
   const [hasInitialized, setHasInitialized] = useState(false);
   const [clickWalletIng, setClickWalletIng] = useState(false);
-  const [ethNumber, setEthNumber] = useState<string | number>(0);
-  const [chatNumber, setChatNumber] = useState<string | number>(0);
+  const [usdtNumber, setUsdtNumber] = useState (0);
+  const [chatNumber, setChatNumber] = useState(0);
   const [coefficient, setCoefficient] = useState<string | number>(0)
   const [userInfo, setUserInfo] = useState(  window.userInfo|| {})
   const [uri, setUri] = useState<string>("");
   const [address, setAddress] = useState<string>(window.userAddress || '');
   const [signClient, setSignClient] = useState<SignClient | null>();
+  const [session, setSession] = useState<Object | null>();
   //  初始化链接钱包
   useEffect(() => {
     // showLoading();
@@ -67,6 +69,7 @@ export default function Home() {
           content: '初始化成功...',
           duration: 1
         });
+      
         setClickWalletIng(false)
 
       })
@@ -92,14 +95,16 @@ export default function Home() {
   useEffect(()=>{
     console.log('----eeeeeeee333-3333333--')
     getTokenPrice()
-  },[userInfo])
+  },[])
   const changeValueBy = (value: any, isUSDT = false) => {
-    isUSDT ? setChatNumber(Number(value / coefficient ).toFixed(4)) : setEthNumber(Number(value * coefficient).toFixed(4))
+    isUSDT ? setChatNumber(Number(value / coefficient ).toFixed(4)) : setUsdtNumber(Number(value * coefficient).toFixed(4))
   }
+  //  签名[]
   const signAction = async () => {
     if (!signClient) return;
     try {
-      const { uri, approval } = await signClient.connect({
+      console.log('----signClientsignClient------',signClient)
+    const provider= await signClient.connect({
         // Optionally: pass a known prior pairing (e.g. from `signClient.core.pairing.getPairings()`) to skip the `uri` step.
         // pairingTopic: "pairing?.topic",
         // Provide the namespaces and chains (e.g. `eip155` for EVM-based chains) we want to use in this session.
@@ -117,6 +122,8 @@ export default function Home() {
           },
         },
       });
+      const { uri, approval } =provider;
+      console.log('----------3333------',provider)
       // Open QRCode modal if a URI was returned (i.e. we're not connecting an existing pairing).
       if (uri) {
         await web3Modal.openModal({
@@ -131,6 +138,7 @@ export default function Home() {
         const account = accounts[0];
         setAddress(account);
         window.userAddress = account;
+        setSession(session);
         const result: any = await signClient.request({
           topic: session.topic,
           chainId: "eip155:1",
@@ -150,7 +158,14 @@ export default function Home() {
     }
 
   }
-
+  const exchangeChatCoin = ()=>{
+    callContractMethod({
+      provider:signClient,
+      session,
+      chatNumber,
+      usdtNumber
+    })
+  }
   // const connectWallet = useCallback(() => {
   //   if(clickWalletIng)return
   //   if (!client) return;
@@ -310,9 +325,9 @@ export default function Home() {
           <div className="right">
             <input
               className="value"
-              value={ethNumber}
+              value={usdtNumber}
               onChange={(e) => {
-                setEthNumber(e.target.value)
+                setUsdtNumber(e.target.value)
                 changeValueBy(e.target.value, true)
               }}
               type="text"
@@ -322,7 +337,13 @@ export default function Home() {
         </div>
 
         <div className="footer-box">
-          <div className="footer-btn">兑换</div>
+          {
+            (chatNumber>0 &&usdtNumber>0 ) ?   <div className="footer-btn" onClick={
+              exchangeChatCoin
+            }>兑换</div> : <div className="footer-btn disabled">兑换</div>
+          }
+        
+          
         </div>
       </div>
 
