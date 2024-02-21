@@ -1,7 +1,7 @@
 import Web3 from "web3";
 // import WalletConnectProvider from "@walletconnect/web3-provider";
-import {ABI} from "../utils/ABI"
-import {projectId } from "@/constants/env"
+import { ABI } from "../utils/ABI"
+import { projectId } from "@/constants/env"
 import abiJson from "@/constants/chatExchangeAbi.json"
 async function connectWallet() {
   // 1. 初始化 WalletConnect 提供者
@@ -22,11 +22,11 @@ async function connectWallet() {
   return { web3, userAccount };
 }
 
- 
-export async function callContractMethod(buyInfo={}) {
+
+export async function callContractMethod(buyInfo = {}) {
 
   const web3 = new Web3(buyInfo.provider);
- 
+
   // 5. 定义合约相关信息
   const contractAddress = "0xcDa00144876799df1d538A307866Bc03c4E79Ef7";
 
@@ -35,11 +35,11 @@ export async function callContractMethod(buyInfo={}) {
 
   // 7. 调用合约的方法
   // 假设合约有一个名为 'someMethod' 的方法，你可以这样调用它：
-  contract.methods.exchange(1,2,1,2312312312,Buffer.from("333333", 'hex')).send({ from: "0x77e77e8a57abc9e4b5e9b8174e197b1d13835ae8" })
-    .then(function(result) {
+  contract.methods.exchange(1, 2, 1, 2312312312, Buffer.from("333333", 'hex')).send({ from: "0x77e77e8a57abc9e4b5e9b8174e197b1d13835ae8" })
+    .then(function (result) {
       console.log("方法调用结果：", result);
     })
-    .catch(function(error) {
+    .catch(function (error) {
       console.error("调用方法时出错：", error);
     });
 }
