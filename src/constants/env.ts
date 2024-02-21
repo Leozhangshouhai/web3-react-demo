@@ -5,4 +5,5 @@ export  const metadata ={
   description: "React Example Dapp for Auth",
   url: window.location.host,
   icons: [],
-}
+};
+export const messageKey ="3bee67c0d2becacf651186a5d26fe3a0"

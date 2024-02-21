@@ -23,13 +23,13 @@ export default defineConfig({
       open: true,
       cors: true,
       proxy: {
-        // "/*": {
-        //   // target: 'http://207.244.254.27:5020',
-        //   target: "https://sepolia.optimism.io/",
-        //   // target: "https://bsc.spacex.date",
-        //   changeOrigin: true,
-        //   secure: false,
-        // },
+        "/chatCoin": {
+          // target: 'http://207.244.254.27:5020',
+          target: "http://chat.jkll.ink/api/",
+          // target: "https://bsc.spacex.date",
+          changeOrigin: true,
+          secure: false,
+        },
       
       },
     },

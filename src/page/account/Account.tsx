@@ -7,9 +7,31 @@ import bgLeft from "@/assets/task-bg-left.png"
 import Xicon from "@/assets/xicon.png"
 import { useHistory } from 'react-router-dom'
 import moment from 'moment';
-
+import axiosInstance from "@/service";
+import {userinfoApi,signApi}from"@/service/api"
+import {  message } from 'antd';
 export default function Home() {
+  const userInfoBase= window.userInfo ||  localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) :{}
+  const [userInfo,setUserInfo] =useState(userInfoBase || {})
   const history = useHistory();
+  const  signInAction = async ()=>{
+    const result= await axiosInstance.post(signApi).catch(e=>{
+      console.log('----eeeeeeee333---',e)
+     });
+     if(result.code=="0"){
+      userInfo.signCount +=1;
+      const obj=Object.assign({},userInfo)
+
+     setUserInfo(obj);
+     message.success('签到成功')
+     }else{
+      message.error(result.message)
+     }
+   
+    
+    
+     console.log('result------',result)
+   }
   const [tableData, setTableData] = useState([
     { text:  moment().format('MM-DD'), index: 0 },
     { text: moment().add(1,'days').format('MM-DD'), index: 1 },
@@ -39,14 +61,18 @@ export default function Home() {
     <div className="sign-box">
       <div className="sign-box-top  border-r">
         <div className="day-box">
-          <span>连续签到  <b>0</b> 天</span>
-          <span className="btn">签到</span>
+          <span className="desc">连续签到  <b>{userInfo.signCount}</b> 天</span>
+          {
+         
+          userInfo.signToday  ?  <span className="btn over-sign" >已签到</span> :    <span className="btn" onClick={signInAction}>签到</span>
+          }
+         
         </div>
         <div className="action-box">
           {
-            tableData.map((item: { text: boolean | ReactChild | ReactFragment | ReactPortal | null | undefined; }, index: number) => {
-              return <div className='item-box' >
-                <div className={index == 1 ? 'item-outer item-outer-active' : 'item-outer'}>
+            tableData.map((item:any, index: number) => {
+              return <div className='item-box' key={index}>
+                <div className={index == 0 ? 'item-outer item-outer-active' : 'item-outer'}>
                   <div className="item">+1 </div>
                 </div>
                 <div className="des">{item.text}</div>
@@ -63,8 +89,8 @@ export default function Home() {
         <div className="sub-title"> 任务二</div>
         <div className="task-line-box">
           {
-            mediaList.map((item: { title: boolean | ReactChild | ReactFragment | ReactPortal | null | undefined; desc: boolean | ReactChild | ReactFragment | ReactPortal | null | undefined; })=>{
-              return    <div className="line-item">
+            mediaList.map((item,index)=>{
+              return    <div className="line-item" key={index}>
               <div className="left">
                 <img src={Xicon} alt="" />
               </div>
@@ -73,7 +99,7 @@ export default function Home() {
                 <div className="desc">{item.desc}</div>
                  </div>
               <div className="right">
-                去完成 </div>
+                 { userInfo.follow ==1 ? '已关注':'去完成'} </div>
             </div>
             })
           }
