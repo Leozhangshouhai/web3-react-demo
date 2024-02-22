@@ -1,3 +1,4 @@
+declare const window: any;
 import walletIcon from "@/assets/wallet.png";
 import bgWhole from "@/assets/banner-2-whole.png";
 import downAr from "@/assets/down.png";
@@ -5,48 +6,31 @@ import ethIcon from "@/assets/eth.png";
 import chatIcon from "@/assets/chat.png";
 import TabBar from "@/components/tabbar";
 import { useHistory } from "react-router-dom";
-import AuthClient, { generateNonce } from "@walletconnect/auth-client";
+// import AuthClient, { generateNonce } from "@walletconnect/auth-client";
 import { useCallback, useEffect, useState } from "react";
-import { Web3Modal } from "@web3modal/standalone";
-import { projectId, metadata, relayUrl, messageKey } from "@/constants/env"
-import SignClient from "@walletconnect/sign-client"
 import axiosInstance from "@/service";
 import { userinfoApi, tokenPriceApi } from "@/service/api"
 import "./index.less";
 import { message } from 'antd';
-import {callContractMethod} from "@/service/callContract"
+import {callContractMethod,initProvider,initWeb3Connect,signSignature} from "@/service/callContract"
 // 1. Get projectID at https://cloud.walletconnect.com
 // 项目ID
 
-if (!projectId) {
-  throw new Error("You need to provide NEXT_PUBLIC_PROJECT_ID env variable");
-}
 
-
-// 2. Configure web3Modal
-const web3Modal = new Web3Modal({
-  projectId,
-  walletConnectVersion: 2,
-});
 export default function Home() {
   const history = useHistory();
 
-
-  const info = () => {
-    console.log('333-----1231')
-    message.info('Hello, Ant Design!');
-  };
-  const [client, setClient] = useState<AuthClient | null>();
-  const [hasInitialized, setHasInitialized] = useState(false);
   const [clickWalletIng, setClickWalletIng] = useState(false);
   const [usdtNumber, setUsdtNumber] = useState (0);
   const [chatNumber, setChatNumber] = useState(0);
-  const [coefficient, setCoefficient] = useState<string | number>(0)
+  const [coefficient, setCoefficient] = useState(0)
   const [userInfo, setUserInfo] = useState(  window.userInfo|| {})
-  const [uri, setUri] = useState<string>("");
   const [address, setAddress] = useState<string>(window.userAddress || '');
-  const [signClient, setSignClient] = useState<SignClient | null>();
-  const [session, setSession] = useState<Object | null>();
+  const initFn =async ()=>{
+    setClickWalletIng(!(!!window.$$provider))
+   await initProvider();
+    setClickWalletIng(false)
+  }
   //  初始化链接钱包
   useEffect(() => {
     // showLoading();
@@ -55,25 +39,8 @@ export default function Home() {
     //   key: 'init111',
     //   duration: 0
     // })
-    setClickWalletIng(true)
-    SignClient.init({
-      projectId,
-      // optional parameters
-      relayUrl,
-      metadata,
-    })
-      .then((signClient) => {
-        setSignClient(signClient);
-        message.destroy()
-        message.success({
-          content: '初始化成功...',
-          duration: 1
-        });
-      
-        setClickWalletIng(false)
-
-      })
-      .catch(console.error);
+    initFn();
+   
   }, []);
 
   const getUserInfo = async () => {
@@ -101,70 +68,28 @@ export default function Home() {
   }
   //  签名[]
   const signAction = async () => {
-    if (!signClient) return;
-    try {
-      console.log('----signClientsignClient------',signClient)
-    const provider= await signClient.connect({
-        // Optionally: pass a known prior pairing (e.g. from `signClient.core.pairing.getPairings()`) to skip the `uri` step.
-        // pairingTopic: "pairing?.topic",
-        // Provide the namespaces and chains (e.g. `eip155` for EVM-based chains) we want to use in this session.
-        requiredNamespaces: {
-          eip155: {
-            methods: [
-              "eth_sendTransaction",
-              "eth_signTransaction",
-              "eth_sign",
-              "personal_sign",
-              "eth_signTypedData",
-            ],
-            chains: ["eip155:1"],
-            events: ["chainChanged", "accountsChanged"],
-          },
-        },
-      });
-      const { uri, approval } =provider;
-      console.log('----------3333------',provider)
-      // Open QRCode modal if a URI was returned (i.e. we're not connecting an existing pairing).
-      if (uri) {
-        await web3Modal.openModal({
-          uri,
-        });
-
-        const session = await approval();
-        // Handle the returned session (e.g. update UI to "connected" state).
-        // * You will need to create this function *
-        console.log("session-----", session);
-        const accounts = session.namespaces.eip155.accounts;
-        const account = accounts[0];
-        setAddress(account);
-        window.userAddress = account;
-        setSession(session);
-        const result: any = await signClient.request({
-          topic: session.topic,
-          chainId: "eip155:1",
-          request: {
-            method: "personal_sign",
-            params: [messageKey, account],
-          },
-        });
-        localStorage.setItem('signature', result)
-        message.success('签名成功')
-        getUserInfo();
-        getTokenPrice();
-        web3Modal.closeModal();
-      }
-    } catch (e) {
-      console.error(e);
-    }
+   const {address} = await initWeb3Connect();
+   setAddress(address);
+   const signature =await signSignature(address);
+   console.log('signaturesignature',signature)
+   if(signature){
+    message.success('签名成功');
+    getUserInfo();
+   }
 
   }
   const exchangeChatCoin = ()=>{
-    callContractMethod({
-      provider:signClient,
-      session,
-      chatNumber,
-      usdtNumber
+   const contractItem= callContractMethod();
+   if(contractItem){
+    contractItem.methods.exchange(1, 2, 1, 2312312312, Buffer.from("333333", 'hex')).send({ from: address })
+    .then(function (result) {
+      console.log("方法调用结果：", result);
     })
+    .catch(function (error) {
+      console.error("调用方法时出错：", error);
+    });
+   }
+  
   }
   // const connectWallet = useCallback(() => {
   //   if(clickWalletIng)return
@@ -253,7 +178,7 @@ export default function Home() {
     <div className="home-box">
       <div className="top-box">
         <div className="header-box">
-          <span className="title" onClick={info}>
+          <span className="title" >
             签名HOME</span>
           <span className={`wallet-box  ${clickWalletIng ? ' isConnecting' : ''}`} onClick={() => {
             if (!address) {

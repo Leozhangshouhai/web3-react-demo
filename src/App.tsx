@@ -5,7 +5,7 @@ import { Web3ReactProvider, createWeb3ReactRoot } from "@web3-react/core";
 import Web3ReactManager from "@/components/Web3ReactManager/index";
 
 import { NetworkContextName } from "@/config";
-// import { ChakraProvider } from '@chakra-ui/react'
+
 import Home from "@/page/home/Home";
 import Account from "@/page/account/Account";
 import Sign from "@/page/home/sign";
@@ -19,7 +19,7 @@ const Web3ProviderNetwork = createWeb3ReactRoot(NetworkContextName);
 
 function App() {
     return (
-      // <ChakraProvider>
+     
         <Web3ReactProvider getLibrary={getLibrary}>
             <Web3ProviderNetwork getLibrary={getLibrary}>
                 <Router>
@@ -39,7 +39,7 @@ function App() {
             </Web3ProviderNetwork>
             {/* <Message></Message> */}
         </Web3ReactProvider>
-        // </ChakraProvider>
+      
     );
 }
 
