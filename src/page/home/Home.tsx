@@ -9,10 +9,11 @@ import { useHistory } from "react-router-dom";
 // import AuthClient, { generateNonce } from "@walletconnect/auth-client";
 import { useCallback, useEffect, useState } from "react";
 import axiosInstance from "@/service";
-import { userinfoApi, tokenPriceApi } from "@/service/api"
+import { userinfoApi, tokenPriceApi, transInfoApi } from "@/service/api"
 import "./index.less";
 import { message } from 'antd';
-import {callContractMethod,initProvider,initWeb3Connect,signSignature} from "@/service/callContract"
+import { Op_Contract_Address } from "@/constants/env"
+import { callContractMethod, initProvider, initWeb3Connect, signSignature, ercTokenContractInstance } from "@/service/callContract"
 // 1. Get projectID at https://cloud.walletconnect.com
 // 项目ID
 
@@ -21,30 +22,25 @@ export default function Home() {
   const history = useHistory();
 
   const [clickWalletIng, setClickWalletIng] = useState(false);
-  const [usdtNumber, setUsdtNumber] = useState (0);
+  const [usdtNumber, setUsdtNumber] = useState(0);
   const [chatNumber, setChatNumber] = useState(0);
   const [coefficient, setCoefficient] = useState(0)
-  const [userInfo, setUserInfo] = useState(  window.userInfo|| {})
+  const [userInfo, setUserInfo] = useState(window.userInfo || {})
   const [address, setAddress] = useState<string>(window.userAddress || '');
-  const initFn =async ()=>{
+  const [webContractInstance, setWebContractInstance] = useState<any>()
+  const initFn = async () => {
     setClickWalletIng(!(!!window.$$provider))
-   await initProvider();
+    await initProvider();
     setClickWalletIng(false)
+
   }
   //  初始化链接钱包
   useEffect(() => {
-    // showLoading();
-    // message.loading({
-    //   content: '钱包初始化...',
-    //   key: 'init111',
-    //   duration: 0
-    // })
     initFn();
-   
   }, []);
 
   const getUserInfo = async () => {
-    const result = await axiosInstance.get(userinfoApi).catch(e => {
+    const result: any = await axiosInstance.get(userinfoApi).catch(e => {
       console.log('----eeeeeeee333---', e)
     });
     console.log('----eeeeeeee333--resultresult-', result)
@@ -52,44 +48,68 @@ export default function Home() {
     setUserInfo(result.data)
     localStorage.setItem('userInfo', JSON.stringify(result.data))
   }
-  const getTokenPrice = async()=>{
+  const getTransInfo = async () => {
+    const result = await axiosInstance.post(transInfoApi, {
+      num: chatNumber
+    }).catch(e => {
+      console.log("-----3-33333", result)
+    })
+    if (!result) return null
+    return result;
+  }
+  const getTokenPrice = async () => {
     const result = await axiosInstance.get(tokenPriceApi).catch(e => {
       console.log('----eeeeeeee333---', e)
     });
     console.log('----eeegetTokenPricegetTokenPriceeeeee333---', result)
     setCoefficient(result?.data?.unitPrice)
   }
-  useEffect(()=>{
+  useEffect(() => {
     console.log('----eeeeeeee333-3333333--')
     getTokenPrice()
-  },[])
+  }, [])
   const changeValueBy = (value: any, isUSDT = false) => {
-    isUSDT ? setChatNumber(Number(value / coefficient ).toFixed(4)) : setUsdtNumber(Number(value * coefficient).toFixed(4))
+    isUSDT ? setChatNumber(Number(value / coefficient).toFixed(4)) : setUsdtNumber(Number(value * coefficient).toFixed(4))
   }
   //  签名[]
   const signAction = async () => {
-   const {address} = await initWeb3Connect();
-   setAddress(address);
-   const signature =await signSignature(address);
-   console.log('signaturesignature',signature)
-   if(signature){
-    message.success('签名成功');
-    getUserInfo();
-   }
+    const { address, web3 } = await initWeb3Connect();
+    setWebContractInstance({
+      contractInstance: callContractMethod(),
+      tokenContractInstance: ercTokenContractInstance(),
+      web3
+    })
+
+    const signature = await signSignature(address);
+    console.log('signaturesignature', signature)
+    if (signature) {
+      setAddress(address);
+      localStorage.setItem('signature', signature)
+      message.success('签名成功');
+      getUserInfo();
+    }
 
   }
-  const exchangeChatCoin = ()=>{
-   const contractItem= callContractMethod();
-   if(contractItem){
-    contractItem.methods.exchange(1, 2, 1, 2312312312, Buffer.from("333333", 'hex')).send({ from: address })
-    .then(function (result) {
-      console.log("方法调用结果：", result);
-    })
-    .catch(function (error) {
-      console.error("调用方法时出错：", error);
-    });
-   }
-  
+  const exchangeChatCoin = async () => {
+    const result: any = await getTransInfo();
+    const { num, signature, timestamp, totalPrice, unitPrice } = result.data;
+    console.log("22--", signature)
+    // webContractInstance.web3.utils.toWei('3400', 'ether')
+    await webContractInstance.tokenContractInstance.methods.approve(Op_Contract_Address, totalPrice).send({ from: address })
+
+     if( webContractInstance.contractInstance){
+      message.loading('等待钱包确认')
+      webContractInstance.contractInstance.methods.exchange(num, unitPrice, totalPrice, timestamp, Buffer.from(signature, 'hex')).send({ from: address })
+      .then(function (result) {
+        console.log("方法调用结果：", result);
+        message.success('兑换成功')
+      })
+      .catch(function (error) {
+        console.error("调用方法时出错：", error);
+        message.error(error)
+      });
+     }
+
   }
   // const connectWallet = useCallback(() => {
   //   if(clickWalletIng)return
@@ -197,7 +217,7 @@ export default function Home() {
         <div className="banner-box">
           <div className="banner-box-1">
             <div className="des">当前价格</div>
-            <div className="price">1U = { Number(coefficient).toFixed(2)} CHAT</div>
+            <div className="price">1U = {Number(1 / coefficient).toFixed(4)} CHAT</div>
             <div className="btn-box">查看K线</div>
           </div>
           <div
@@ -263,12 +283,12 @@ export default function Home() {
 
         <div className="footer-box">
           {
-            (chatNumber>0 &&usdtNumber>0 ) ?   <div className="footer-btn" onClick={
+            (chatNumber > 0 && usdtNumber > 0) ? <div className="footer-btn" onClick={
               exchangeChatCoin
             }>兑换</div> : <div className="footer-btn disabled">兑换</div>
           }
-        
-          
+
+
         </div>
       </div>
 
