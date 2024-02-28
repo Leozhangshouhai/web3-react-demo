@@ -9,6 +9,7 @@ import { useHistory } from 'react-router-dom'
 import moment from 'moment';
 import axiosInstance from "@/service";
 import {userinfoApi,signApi}from"@/service/api"
+import Voucher from "@/components/voucher";
 import {  message } from 'antd';
 export default function Home() {
   const userInfoBase= window.userInfo ||  localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) :{}
@@ -103,9 +104,11 @@ export default function Home() {
             </div>
             })
           }
-       
+
         </div>
+       
       </div>
+      <Voucher />
     </div>
 
   </div>
