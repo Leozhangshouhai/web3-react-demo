@@ -72,12 +72,8 @@ const Voucher: React.FC = (props) => {
     formData.append('content', content);  
     formData.append('taskId', taskId)
     files.forEach(item => {
-      console.log(item)
       formData.append('files', item)
     })
-    for (let value of formData.values()) {  
-      console.log(value);  
-    }
     const { code, message: msg } = await axiosInstance.post(submitTask,formData)
     setDisable(false)
     setContent('')
