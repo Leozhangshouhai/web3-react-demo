@@ -1,21 +1,23 @@
 
 import { useState, useEffect } from "react";
-// import {AxiosResponse  } from 'axios'
 import Dialog from "../dialog/Index";
 import { message, Input, Upload } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import type { GetProp, UploadFile, UploadProps } from 'antd';
 import "./index.less"
 import axiosInstance from "@/service";
 import { getTaskList, submitTask } from '@/service/api'
-// import card from "@/assets/card.png"
 import chat from "@/assets/chat.png"
 
 const { TextArea } = Input;
 
+interface ApiResponse {  
+  code: string;  
+  data: Array<any>; // 或者具体的类型，如: ItemType[]  
+  message: string;  
+}  
 
 const Voucher: React.FC = (props) => {
-  const [list, setList] = useState([])
+  const [list, setList] = useState<any[]>([])
   const [showDialog, setDialog] = useState(false)
   const [files, setFiles] = useState([])
   const [content, setContent] = useState('12')
@@ -23,8 +25,7 @@ const Voucher: React.FC = (props) => {
   const [disable, setDisable] = useState(false)
 
   const getTaskListAction = async () => {
-    // let res: AxiosResponse<any, any> | null = null; 
-    const { code, data = [], message: msg }  = await axiosInstance.get(getTaskList)
+    const { code, data = [], message: msg }:ApiResponse  = await axiosInstance.get(getTaskList)
     if (code == "0") {
       setList(data)
     } else {
@@ -74,7 +75,7 @@ const Voucher: React.FC = (props) => {
     files.forEach(item => {
       formData.append('files', item)
     })
-    const { code, message: msg } = await axiosInstance.post(submitTask,formData)
+    const { code, message: msg }: ApiResponse = await axiosInstance.post(submitTask,formData)
     setDisable(false)
     setContent('')
     if (code === "0") {

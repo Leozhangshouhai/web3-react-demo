@@ -1,7 +1,7 @@
 import styles from './index.module.less';
 
 // assets images import
-import Img_close from '@/assets/images/home/modal/close.png'
+import Img_close from '@/assets/close.png'
 interface Iprops {
   title: string,
   children: any,
