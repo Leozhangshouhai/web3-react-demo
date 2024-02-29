@@ -1,12 +1,13 @@
 
 import { useState, useEffect } from "react";
 import Dialog from "../dialog/Index";
-import { message, Input, Upload } from 'antd';
+import { message, Input } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import "./index.less"
 import axiosInstance from "@/service";
 import { getTaskList, submitTask } from '@/service/api'
 import chat from "@/assets/chat.png"
+import addIcon from '@/assets/add-icon.png'
 
 const { TextArea } = Input;
 
@@ -19,10 +20,11 @@ interface ApiResponse {
 const Voucher: React.FC = (props) => {
   const [list, setList] = useState<any[]>([])
   const [showDialog, setDialog] = useState(false)
-  const [files, setFiles] = useState([])
-  const [content, setContent] = useState('12')
+  const [files, setFiles] = useState<File[]>([])
+  const [content, setContent] = useState('')
   const [taskId, setTaskId] = useState('')
   const [disable, setDisable] = useState(false)
+  const [previewImages, setPreviewImages] = useState<string[]>([])
 
   const getTaskListAction = async () => {
     const { code, data = [], message: msg }:ApiResponse  = await axiosInstance.get(getTaskList)
@@ -59,9 +61,12 @@ const Voucher: React.FC = (props) => {
     </button>
   );
 
-  const handleChange = (data: any) => {
-    console.log(data)
-    setFiles(data.fileList)
+  const handleChange = (event: any) => {
+    const filesList: FileList = event.target.files;
+    setFiles((prevImages) => [...prevImages, ...filesList]);
+    const imagePreviews: string[] = Array.from(filesList).map((file) => URL.createObjectURL(file));
+    console.log(imagePreviews)
+    setPreviewImages((prevPreviews) => [...prevPreviews, ...imagePreviews]);
   }
 
   const onSubmit = async () => {
@@ -127,17 +132,16 @@ const Voucher: React.FC = (props) => {
           <div className="card-box">
             <div className="card-title">请上传凭证</div>
             <div className="card-list">
-              <Upload
-                listType="picture-card"
-                fileList={files}
-                onChange={handleChange}
-                accept="image/*"
-              >
-                {files.length >= 8 ? null : uploadButton}
-              </Upload>
+              {previewImages.map((preview, index) => (
+                <img className="preview-img" key={index} src={preview} alt={`Preview ${index + 1}`} />
+              ))}
+              <label className="select-label" htmlFor="imageInput">
+                <img className="add-icon" src={addIcon} alt="" />
+              </label>
+              <input  id='imageInput' type="file" multiple onChange={handleChange} />
             </div>
           </div>
-
+          
           <div className='submit-btn' onClick={onSubmit}>提交</div>
         </div>
       </Dialog>

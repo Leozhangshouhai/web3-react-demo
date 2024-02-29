@@ -89,6 +89,39 @@
       .card-title{
         margin-bottom: 17px;
       }
+
+      .card-list{
+        display: flex;
+        flex-wrap: wrap;
+        
+        align-items: center;
+
+        #imageInput{
+          display: none;
+        }
+      
+        .select-label, .preview-img{
+          
+          cursor: pointer;
+          display: block;
+          width: 62px;
+          height: 62px;
+          background: #1F2036;
+          // margin: 5px;
+          margin-bottom: 10px;
+          margin-top: 10px;
+          margin-right: 10px;
+          border-radius: 6px;
+        }
+        .select-label{
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          .add-icon{
+            width: 30px;
+          }
+        }
+      }
     }
 
     .submit-btn{
@@ -100,22 +133,4 @@
       border-radius: 72px;
     }
   }
-
-  .ant-upload.ant-upload-select-picture-card{
-    background: #1F2036;
-    border: 0;
-  }
-  .add-icon{
-    color: #fff;
-  }
-
-  .ant-upload-list-picture-card .ant-upload-list-item-error{
-    border-color:#fff;
-  }
-
-  .ant-upload-list-picture-card-container, .ant-upload.ant-upload-select-picture-card{
-    width: 76px;
-    height: 76px;
-  }
-  
 }
