@@ -54,13 +54,7 @@ const Voucher: React.FC = (props) => {
   const inputTxt = (e: any) => {
     setContent(e.currentTarget.value)
   }
-
-  const uploadButton = (
-    <button style={{ border: 0, background: 'none' }} type="button">
-      <PlusOutlined className="add-icon"/>
-    </button>
-  );
-
+  
   const handleChange = (event: any) => {
     const filesList: FileList = event.target.files;
     setFiles((prevImages) => [...prevImages, ...filesList]);
