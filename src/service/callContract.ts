@@ -33,11 +33,22 @@ export async function initWeb3Connect(t: Function){
   }else{
     provider =initProvider(t)
   }
+  // wallet_switchEthereumChain
  
-  await provider.connect();
+  let connectResult=  await provider.connect().catch(e=>{
+    return false;
+  });
+
+  // if(!connectResult){
+  //   const result2:any = await provider.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '5' }], });  
+  //   console.log('result2---',result2)
+  // }
+
   const result:any = await provider.request({ method: 'eth_requestAccounts' })
   const web3 = new Web3(provider);
   const id= await web3.eth.getChainId();
+  
+
   console.log('-------getChainIdgetChainId--------',id)
   window.$$web3=web3;
   window.userAddress =result[0];

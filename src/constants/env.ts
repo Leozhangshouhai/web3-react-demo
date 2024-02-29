@@ -8,7 +8,7 @@ export  const metadata ={
 };
 export const messageKey ="3bee67c0d2becacf651186a5d26fe3a0"
 export const mainChainsId =10 // 正式链
-export const mainEthChainsIdTest =5
+export const mainEthChainsIdTest =5 //eth test 
 
 
 // 测试U的 地址
