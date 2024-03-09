@@ -1,6 +1,7 @@
 import Axios from 'axios';
 // import { showLoading, hideLoading } from './loading'
 import { message } from 'antd';
+// @ts-ignore  
 import Qs from 'qs'
 import { showMessage } from '@/store/globalSlice';
 import { store } from '@/store'

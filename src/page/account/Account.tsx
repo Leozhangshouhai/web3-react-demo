@@ -11,12 +11,19 @@ import axiosInstance from "@/service";
 import {userinfoApi,signApi}from"@/service/api"
 import Voucher from "@/components/voucher";
 import {  message } from 'antd';
+
+declare global {  
+  interface Window {  
+    userInfo: any; // 或者具体的类型  
+  }  
+}
+
 export default function Home() {
-  const userInfoBase= window.userInfo ||  localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) :{}
+  const userInfoBase= window.userInfo ||  localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo') ?? '') :{}
   const [userInfo,setUserInfo] =useState(userInfoBase || {})
   const history = useHistory();
   const  signInAction = async ()=>{
-    const result= await axiosInstance.post(signApi).catch(e=>{
+    const result: any = await axiosInstance.post(signApi).catch(e=>{
       console.log('----eeeeeeee333---',e)
      });
      if(result.code=="0"){

@@ -49,7 +49,7 @@ export async function signSignature(account:any) {
   const address =account || window.userAddress  || '';
   if(!address) return ;
   const web3=window.$$web3;
-  const result =await  web3.eth.personal.sign(messageKey, address, "").catch(err=>{
+  const result =await  web3.eth.personal.sign(messageKey, address, "").catch(()=>{
       message.error('result')
       return ''
     })

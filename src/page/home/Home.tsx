@@ -69,7 +69,7 @@ export default function Home() {
     getTokenPrice()
   }, [])
   const changeValueBy = (value: any, isUSDT = false) => {
-    isUSDT ? setChatNumber(Number(value / coefficient).toFixed(4)) : setUsdtNumber(Number(value * coefficient).toFixed(4))
+    isUSDT ? setChatNumber(+Number(value / coefficient).toFixed(4)) : setUsdtNumber(+Number(value * coefficient).toFixed(4))
   }
   //  签名[]
   const signAction = async () => {
@@ -100,11 +100,11 @@ export default function Home() {
      if( webContractInstance.contractInstance){
       message.loading('等待钱包确认')
       webContractInstance.contractInstance.methods.exchange(num, unitPrice, totalPrice, timestamp, Buffer.from(signature, 'hex')).send({ from: address })
-      .then(function (result) {
+      .then(function (result: any) {
         console.log("方法调用结果：", result);
         message.success('兑换成功')
       })
-      .catch(function (error) {
+      .catch(function (error: any) {
         console.error("调用方法时出错：", error);
         message.error(error)
       });
@@ -250,7 +250,7 @@ export default function Home() {
               className="value"
               value={chatNumber}
               onChange={(e) => {
-                setChatNumber(e.target.value);
+                setChatNumber(+e.target.value);
                 changeValueBy(e.target.value, false)
               }
               }
@@ -272,7 +272,7 @@ export default function Home() {
               className="value"
               value={usdtNumber}
               onChange={(e) => {
-                setUsdtNumber(e.target.value)
+                setUsdtNumber(+e.target.value)
                 changeValueBy(e.target.value, true)
               }}
               type="text"
