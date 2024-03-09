@@ -23,9 +23,9 @@ export default defineConfig({
       open: true,
       cors: true,
       proxy: {
-        "/chatCoin": {
+        "/api": {
           // target: 'http://207.244.254.27:5020',
-          target: "http://chat.jkll.ink/api/",
+          target: "http://chat.jkll.ink/",
           // target: "https://bsc.spacex.date",
           changeOrigin: true,
           secure: false,
