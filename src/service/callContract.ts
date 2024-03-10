@@ -35,7 +35,8 @@ export async function initWeb3Connect(t: Function){
   }
   // wallet_switchEthereumChain
  
-  let connectResult=  await provider.connect().catch(e=>{
+  let connectResult=  await provider.connect().catch(()=>{
+
     return false;
   });
 
