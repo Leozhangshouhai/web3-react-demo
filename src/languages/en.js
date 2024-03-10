@@ -1,5 +1,5 @@
 const en = {
-  签名HOME: 'Home Sign',
+  HOME: 'HOME',
   签名成功: 'Sign Success',
   等待钱包确认: 'Waiting for Wallet Confirmation',
   兑换成功: 'Exchange Success',
@@ -29,6 +29,9 @@ const en = {
   请输入您要输入的内容: 'Please enter the content',
   提交: 'Submit',
   初始化成功: 'Initialization Successfu',
-  请先授权钱包签名: 'Please authorize wallet signature first'
+  请先授权钱包签名: 'Please authorize wallet signature first',
+  提交凭证: 'Submit Proof',
+  登录: 'Login',
+  即将开放: 'Coming Soon'
 }
 export default  en

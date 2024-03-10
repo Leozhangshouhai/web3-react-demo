@@ -1,7 +1,7 @@
 import home0 from "@/assets/home-0.png"
 import home1 from "@/assets/home-1.png"
-import task0 from "@/assets/USDT.svg"
-// import task1 from "@/assets/task-1.png"
+import task0 from "@/assets/task-0.png"
+import task1 from "@/assets/task-1.png"
 import { useTranslation } from 'react-i18next';
 import "./index.less"
 import { useHistory,useLocation } from 'react-router-dom'
@@ -19,7 +19,7 @@ export default function tabBar(){
         <div className="name">{t('首页')}</div>
       </div>
       <div className={`right item ${ !isActiveTask ?'':'item-active'}`}  onClick={() => { history.push('/task') }}> 
-        <img src={task0} alt="" />
+        <img src={isActiveTask ? task0 : task1} alt="" />
         <div className="name">{t('任务')}</div>
        </div>
     </div>

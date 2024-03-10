@@ -108,6 +108,12 @@ export default function Home() {
 
   }
   const exchangeChatCoin = async () => {
+    const canExchange = true
+    // TODO: 兑换
+    if(canExchange){
+      message.info(`${t('即将开放')}...`)
+      return
+    }
     const result: any = await getTransInfo();
     const { num, signature, timestamp, totalPrice, unitPrice } = result.data;
     console.log("22--", signature)
@@ -213,7 +219,6 @@ export default function Home() {
 
   const [ toggle, setToggle ] = useState(false)
   const changeLanguage = (lng: string) => {
-    console.log(lng)
     i18n.changeLanguage(lng);
   };
 
@@ -222,44 +227,47 @@ export default function Home() {
       <div className="top-box">
         <div className="header-box">
           <span className="title" >
-           {t('签名HOME')}
+            { t('HOME') }
           </span>
-          <span className="wallet-box language" onClick={() => {
-            setToggle(!toggle)
-          }}>
-            <img
-              draggable="false"
-              className="left-icon"
-              src={frame}
-              alt=""
-            />
-            <img
-              draggable="false"
-              className={`left-icon arrow-icon ${toggle ? 'arrow-icon-up': ''}`}
-              src={arrow}
-              alt=""
-            />
-            {
-              toggle ?  <div className="lang-box">
-                {
-                  Language.map(item => <div key={item.key} onClick={() => changeLanguage(item.key)}>{item.value}</div>)
-                }
-              </div> : null
-            }
-          </span>
-          <span className={`wallet-box  ${clickWalletIng ? ' isConnecting' : ''}`} onClick={() => {
-            if (!address) {
-              signAction()
-            }
-          }}>
-            <img
-              draggable="false"
-              className="left-icon"
-              src={walletIcon}
-              alt=""
-            />
-            <span className="text">{address ? `${address.slice(0, 4)}....${address.slice(-4)}` : 'login'}</span>
-          </span>
+          <div className="home-right">
+            <span className="wallet-box language" onClick={() => {
+              setToggle(!toggle)
+            }}>
+              <img
+                draggable="false"
+                className="left-icon"
+                src={frame}
+                alt=""
+              />
+              <img
+                draggable="false"
+                className={`left-icon arrow-icon ${toggle ? 'arrow-icon-up': ''}`}
+                src={arrow}
+                alt=""
+              />
+              {
+                toggle ?  <div className="lang-box">
+                  {
+                    Language.map(item => <div key={item.key} onClick={() => changeLanguage(item.key)}>{item.value}</div>)
+                  }
+                </div> : null
+              }
+            </span>
+            <span className={`wallet-box  ${clickWalletIng ? ' isConnecting' : ''}`} onClick={() => {
+              if (!address) {
+                signAction()
+              }
+            }}>
+              <img
+                draggable="false"
+                className="left-icon"
+                src={walletIcon}
+                alt=""
+              />
+              <span className="text">{address ? `${address.slice(0, 4)}....${address.slice(-4)}` : 'login'}</span>
+            </span>
+          </div>
+          
           
         </div>
         <div className="banner-box">
@@ -333,7 +341,7 @@ export default function Home() {
           {
             (chatNumber > 0 && usdtNumber > 0) ? <div className="footer-btn" onClick={
               exchangeChatCoin
-            }>{t('兑换')}</div> : <div className="footer-btn disabled">{t('兑换')}</div>
+            }>{t('兑换')}</div> : <div className="footer-btn disabled" onClick={exchangeChatCoin}>{t('兑换')}</div>
           }
 
 
