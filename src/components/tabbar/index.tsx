@@ -1,7 +1,7 @@
 import home0 from "@/assets/home-0.png"
 import home1 from "@/assets/home-1.png"
 import task0 from "@/assets/USDT.svg"
-import task1 from "@/assets/task-1.png"
+// import task1 from "@/assets/task-1.png"
 import { useTranslation } from 'react-i18next';
 import "./index.less"
 import { useHistory,useLocation } from 'react-router-dom'
