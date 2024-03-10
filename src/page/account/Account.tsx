@@ -5,122 +5,155 @@ import TabBar from "@/components/tabbar"
 import bg from "@/assets/task-bg.png"
 import bgLeft from "@/assets/task-bg-left.png"
 import Xicon from "@/assets/xicon.png"
-import { useHistory } from 'react-router-dom'
+import { useHistory, useLocation } from 'react-router-dom'
 import moment from 'moment';
 import axiosInstance from "@/service";
-import {userinfoApi,signApi}from"@/service/api"
+import { userinfoApi, signApi, getAuthorizeUrl, checkFollow } from "@/service/api"
 import Voucher from "@/components/voucher";
-import {  message } from 'antd';
+import { message } from 'antd';
 import { useTranslation } from 'react-i18next';
 
-declare global {  
-  interface Window {  
+
+declare global {
+  interface Window {
     userInfo: any; // 或者具体的类型  
-  }  
+  }
 }
 
 export default function Home() {
-  const { t } = useTranslation();
-  const userInfoBase= window.userInfo ||  localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo') ?? '') :{}
-  const [userInfo,setUserInfo] =useState(userInfoBase || {})
-  const history = useHistory();
-  const  signInAction = async ()=>{
-    const result: any = await axiosInstance.post(signApi).catch(e=>{
-      console.log('----eeeeeeee333---',e)
-     });
-     if(result.code=="0"){
-      userInfo.signCount +=1;
-      const obj=Object.assign({},userInfo)
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const code = searchParams.get('code');
+  const state = searchParams.get('state');
 
-     setUserInfo(obj);
-     message.success(t('签到成功'))
-     }else{
+  const { t } = useTranslation();
+  const userInfoBase = window.userInfo || localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo') ?? '') : {}
+  const [userInfo, setUserInfo] = useState(userInfoBase || {})
+  const history = useHistory();
+  const signInAction = async () => {
+    const result: any = await axiosInstance.post(signApi).catch(e => {
+      console.log('----eeeeeeee333---', e)
+    });
+    if (result.code == "0") {
+      userInfo.signCount += 1;
+      const obj = Object.assign({}, userInfo)
+      setUserInfo(obj);
+      localStorage.setItem('userInfo', JSON.stringify(obj))
+      message.success(t('签到成功'))
+    } else {
       message.error(result.message)
-     }
-   
-    
-    
-     console.log('result------',result)
-   }
+    }
+  }
+
+  useEffect(() => {
+    if (code && state) {
+      checkFollowFun()
+    }
+  }, [code, state])
+
+  const checkFollowFun = async () => {
+    const res: any = await axiosInstance.get(`${checkFollow}?state=${state}&code=${code}`)
+    if (+res.code === 0) {
+      console.log(res)
+      if (userInfo) {
+        const newUserInfo = {
+          ...userInfo,
+          follow: 1
+        }
+        setUserInfo(newUserInfo)
+        localStorage.setItem('userInfo', JSON.stringify(newUserInfo))
+        message.success(t('任务已完成'))
+      }
+    } else {
+      message.error(res.message)
+    }
+  }
+
   const [tableData, setTableData] = useState([
-    { text:  moment().format('MM-DD'), index: 0 },
-    { text: moment().add(1,'days').format('MM-DD'), index: 1 },
-    { text: moment().add(2,'days').format('MM-DD'), index: 2 },
-    { text: moment().add(3,'days').format('MM-DD'), index: 3 },
-    { text: moment().add(4,'days').format('MM-DD'), index: 4 }, { text: moment().add(5,'days').format('MM-DD'), index: 5 }
-    , { text: moment().add(6,'days').format('MM-DD'), index: 6 }, { text: moment().add(7,'days').format('MM-DD'), index: 7 }
+    { text: moment().format('MM-DD'), index: 0 },
+    { text: moment().add(1, 'days').format('MM-DD'), index: 1 },
+    { text: moment().add(2, 'days').format('MM-DD'), index: 2 },
+    { text: moment().add(3, 'days').format('MM-DD'), index: 3 },
+    { text: moment().add(4, 'days').format('MM-DD'), index: 4 }, { text: moment().add(5, 'days').format('MM-DD'), index: 5 }
+    , { text: moment().add(6, 'days').format('MM-DD'), index: 6 }, { text: moment().add(7, 'days').format('MM-DD'), index: 7 }
   ]);
   const [mediaList, setMediaList] = useState([
-    { title: t('推特一'), desc: t('关注指定推特，可获得19Chat'),status:0 },
-    
-  
+    { title: t('推特一'), desc: t('关注指定推特，可获得19Chat'), status: 0 },
   ]);
 
+  const getAuthorize = async () => {
+    if (userInfo.follow == 1) return
+    const res: any = await axiosInstance.get(getAuthorizeUrl)
+    console.log(res)
+    if (+res.code === 0) {
+      window.location.href = res.data
+    } else {
+      message.error(res.message)
+    }
+  }
+
   return (<div className="task-box">
-  <div className="top-box">
-    <div className="bg-box">
-      <div className="header">
-        <img src={bgLeft} alt=""  onClick={()=>{history.push("/home")}} />
-        <h3 className="name">{t('任务中心')}</h3>
-        <span className="bank"></span>
-      </div>
-    </div>
-
-  </div>
-  <div className="bottom-box border-r">
-    <div className="sign-box">
-      <div className="sign-box-top  border-r">
-        <div className="day-box">
-          <span className="desc">{t('连续签到')}  <b>{userInfo.signCount}</b> {t('天')}</span>
-          {
-         
-          userInfo.signToday  ?  <span className="btn over-sign" >{t('已签到')}</span> :    <span className="btn" onClick={signInAction}>{t('签到')}</span>
-          }
-         
+    <div className="top-box">
+      <div className="bg-box">
+        <div className="header">
+          <img src={bgLeft} alt="" onClick={() => { history.push("/home") }} />
+          <h3 className="name">{t('任务中心')}</h3>
+          <span className="bank"></span>
         </div>
-        <div className="action-box">
-          {
-            tableData.map((item:any, index: number) => {
-              return <div className='item-box' key={index}>
-                <div className={index == 0 ? 'item-outer item-outer-active' : 'item-outer'}>
-                  <div className="item">+1 </div>
+      </div>
+
+    </div>
+    <div className="bottom-box border-r">
+      <div className="sign-box">
+        <div className="sign-box-top  border-r">
+          <div className="day-box">
+            <span className="desc">{t('连续签到')}  <b>{userInfo.signCount}</b> {t('天')}</span>
+            {
+
+              userInfo.signToday ? <span className="btn over-sign" >{t('已签到')}</span> : <span className="btn" onClick={signInAction}>{t('签到')}</span>
+            }
+
+          </div>
+          <div className="action-box">
+            {
+              tableData.map((item: any, index: number) => {
+                return <div className='item-box' key={index}>
+                  <div className={index == 0 ? 'item-outer item-outer-active' : 'item-outer'}>
+                    <div className="item">+1 </div>
+                  </div>
+                  <div className="des">{item.text}</div>
+
                 </div>
-                <div className="des">{item.text}</div>
+              })
+            }
+          </div>
+        </div>
+        <div className="sign-box-bottom  border-r">
+          <div className="sub-title">{t('任务二')}</div>
+          <div className="task-line-box">
+            {
+              mediaList.map((item, index) => {
+                return <div className="line-item" key={index}>
+                  <div className="left">
+                    <img src={Xicon} alt="" />
+                  </div>
+                  <div className="middle">
+                    <div className="title">{item.title}</div>
+                    <div className="desc">{item.desc}</div>
+                  </div>
+                  <div className={`right ${userInfo.follow == 1 ? 'disabled' : ''}`} onClick={getAuthorize}>
+                    {userInfo.follow == 1 ? t('已关注') : t('去完成')} </div>
+                </div>
+              })
+            }
 
-              </div>
-            })
-
-          }
-
+          </div>
 
         </div>
+        <Voucher />
       </div>
-      <div className="sign-box-bottom  border-r">
-        <div className="sub-title">{t('任务二')}</div>
-        <div className="task-line-box">
-          {
-            mediaList.map((item,index)=>{
-              return    <div className="line-item" key={index}>
-              <div className="left">
-                <img src={Xicon} alt="" />
-              </div>
-              <div className="middle">
-                <div className="title">{item.title}</div>
-                <div className="desc">{item.desc}</div>
-                 </div>
-              <div className="right">
-                 { userInfo.follow ==1 ? t('已关注') : t('去完成') } </div>
-            </div>
-            })
-          }
 
-        </div>
-       
-      </div>
-      <Voucher />
     </div>
-
-  </div>
-  <TabBar></TabBar>
-</div>)
+    <TabBar></TabBar>
+  </div>)
 }

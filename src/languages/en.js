@@ -32,6 +32,7 @@ const en = {
   请先授权钱包签名: 'Please authorize wallet signature first',
   提交凭证: 'Submit Proof',
   登录: 'Login',
-  即将开放: 'Coming Soon'
+  即将开放: 'Coming Soon',
+  任务已完成: 'Task completed'
 }
 export default  en
