@@ -11,6 +11,7 @@ import axiosInstance from "@/service";
 import {userinfoApi,signApi}from"@/service/api"
 import Voucher from "@/components/voucher";
 import {  message } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 declare global {  
   interface Window {  
@@ -19,6 +20,7 @@ declare global {
 }
 
 export default function Home() {
+  const { t } = useTranslation();
   const userInfoBase= window.userInfo ||  localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo') ?? '') :{}
   const [userInfo,setUserInfo] =useState(userInfoBase || {})
   const history = useHistory();
@@ -31,7 +33,7 @@ export default function Home() {
       const obj=Object.assign({},userInfo)
 
      setUserInfo(obj);
-     message.success('签到成功')
+     message.success(t('签到成功'))
      }else{
       message.error(result.message)
      }
@@ -49,7 +51,7 @@ export default function Home() {
     , { text: moment().add(6,'days').format('MM-DD'), index: 6 }, { text: moment().add(7,'days').format('MM-DD'), index: 7 }
   ]);
   const [mediaList, setMediaList] = useState([
-    { title: '推特一', desc: '关注指定推特，可获得19Chat',status:0 },
+    { title: t('推特一'), desc: t('关注指定推特，可获得19Chat'),status:0 },
     
   
   ]);
@@ -59,7 +61,7 @@ export default function Home() {
     <div className="bg-box">
       <div className="header">
         <img src={bgLeft} alt=""  onClick={()=>{history.push("/home")}} />
-        <h3 className="name"> 任务中心</h3>
+        <h3 className="name">{t('任务中心')}</h3>
         <span className="bank"></span>
       </div>
     </div>
@@ -69,10 +71,10 @@ export default function Home() {
     <div className="sign-box">
       <div className="sign-box-top  border-r">
         <div className="day-box">
-          <span className="desc">连续签到  <b>{userInfo.signCount}</b> 天</span>
+          <span className="desc">{t('连续签到')}  <b>{userInfo.signCount}</b> {t('天')}</span>
           {
          
-          userInfo.signToday  ?  <span className="btn over-sign" >已签到</span> :    <span className="btn" onClick={signInAction}>签到</span>
+          userInfo.signToday  ?  <span className="btn over-sign" >{t('已签到')}</span> :    <span className="btn" onClick={signInAction}>{t('签到')}</span>
           }
          
         </div>
@@ -94,7 +96,7 @@ export default function Home() {
         </div>
       </div>
       <div className="sign-box-bottom  border-r">
-        <div className="sub-title"> 任务二</div>
+        <div className="sub-title">{t('任务二')}</div>
         <div className="task-line-box">
           {
             mediaList.map((item,index)=>{
@@ -107,7 +109,7 @@ export default function Home() {
                 <div className="desc">{item.desc}</div>
                  </div>
               <div className="right">
-                 { userInfo.follow ==1 ? '已关注':'去完成'} </div>
+                 { userInfo.follow ==1 ? t('已关注') : t('去完成') } </div>
             </div>
             })
           }

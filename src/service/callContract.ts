@@ -6,9 +6,10 @@ import contractAbi from "@/constants/chatExchangeAbi.json"
 import UsdtAbi from "@/constants/erc20.json"
 import { message } from 'antd';
 import exp from "constants";
+// import { useTranslation } from 'react-i18next';
 
-export async function initProvider (){
-  
+export async function initProvider (t:Function){
+  // const { t, } = useTranslation();
   const provider = await EthereumProvider.init({
     projectId: projectId, // required
     metadata,
@@ -16,7 +17,7 @@ export async function initProvider (){
     showQrModal: true // requires @walletconnect/modal
   })
   message.success({
-    content: '初始化成功...',
+    content: `${t('初始化成功')}...`,
     duration: 1
   });
   // successCallBack&&successCallBack()
@@ -25,12 +26,12 @@ export async function initProvider (){
   // localStorage.setItem('web3', JSON.stringify(web3))
   return provider;
 }
-export async function initWeb3Connect(){
+export async function initWeb3Connect(t: Function){
   let  provider=null;
   if(window.$$provider){
      provider= window.$$provider
   }else{
-    provider =initProvider()
+    provider =initProvider(t)
   }
  
   await provider.connect();
@@ -43,9 +44,9 @@ export async function initWeb3Connect(){
   return  {address:result[0],web3}
 }
 
-export async function signSignature(account:any) {
+export async function signSignature(account:any, t:Function) {
  
-  if(!window.$$web3) return message.info('请先授权钱包签名');
+  if(!window.$$web3) return message.info(t('请先授权钱包签名'));
   const address =account || window.userAddress  || '';
   if(!address) return ;
   const web3=window.$$web3;
@@ -58,9 +59,9 @@ export async function signSignature(account:any) {
     return result ;
   }
 
-export function callContractMethod() {
+export function callContractMethod(t: Function) {
  
-  if(!window.$$web3) return message.info('请先授权钱包签名');;
+  if(!window.$$web3) return message.info(t('请先授权钱包签名'));
 
   const web3=window.$$web3;
   const contractAddress = Op_Contract_Address;
@@ -72,8 +73,8 @@ export function callContractMethod() {
   // 假设合约有一个名为 'someMethod' 的方法，你可以这样调用它：
   
 }
-export function ercTokenContractInstance (){
-  if(!window.$$web3) return message.info('请先授权钱包签名');;
+export function ercTokenContractInstance (t: Function){
+  if(!window.$$web3) return message.info(t('请先授权钱包签名'));
   const web3=window.$$web3;
   const tokenContract = new web3.eth.Contract(
     UsdtAbi.abi,

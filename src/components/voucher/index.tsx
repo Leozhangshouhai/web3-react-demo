@@ -8,6 +8,7 @@ import axiosInstance from "@/service";
 import { getTaskList, submitTask } from '@/service/api'
 import chat from "@/assets/chat.png"
 import addIcon from '@/assets/add-icon.png'
+import { useTranslation } from 'react-i18next';
 
 const { TextArea } = Input;
 
@@ -18,6 +19,7 @@ interface ApiResponse {
 }  
 
 const Voucher: React.FC = (props) => {
+  const { t } = useTranslation()
   const [list, setList] = useState<any[]>([])
   const [showDialog, setDialog] = useState(false)
   const [files, setFiles] = useState<File[]>([])
@@ -65,8 +67,8 @@ const Voucher: React.FC = (props) => {
 
   const onSubmit = async () => {
     if(disable) return
-    if(!content) return message.error('请输入内容')
-    if(!files.length) return message.error('请上传凭证')
+    if(!content) return message.error(t('请输入内容'))
+    if(!files.length) return message.error(t('请上传凭证'))
     setDisable(true)
     let formData = new FormData()
     formData.append('content', content);  
@@ -78,7 +80,7 @@ const Voucher: React.FC = (props) => {
     setDisable(false)
     setContent('')
     if (code === "0") {
-      message.success('提交成功')
+      message.success(t('提交成功'))
       setDialog(false)
     }else {
       message.error(msg)
@@ -86,7 +88,7 @@ const Voucher: React.FC = (props) => {
   }
 
   return <div className="voucher-content">
-   { list.length ? <div className="sub-title">提交凭证</div> : null }  
+   { list.length ? <div className="sub-title">{t('提交凭证')}</div> : null }  
     <div className="voucher-wrap">
       {
         list.map((item: any) => {
@@ -94,11 +96,11 @@ const Voucher: React.FC = (props) => {
             <div className="card-item" key={item.id}>
               <div className="card-top">
                 <div className="card-title">{item.title}</div>
-                <div className="show-dialog-btn" onClick={() => showSubmit(item.id)}>提交凭证</div>
+                <div className="show-dialog-btn" onClick={() => showSubmit(item.id)}>{t('提交凭证')}</div>
               </div>
               <div className="award">
                 <div className="award-warp">
-                  <span>奖励：</span>
+                  <span>{t('奖励')}：</span>
                   <img className="chat-icon" src={chat} alt="" />
                   <span>{item.reward}</span>
                 </div>
@@ -115,16 +117,16 @@ const Voucher: React.FC = (props) => {
       }
     </div>
     {
-      showDialog && <Dialog onClose={onClose} title="提交任务">
+      showDialog && <Dialog onClose={onClose} title={t('提交任务')}>
         <div className="form-content">
 
           <TextArea className="form-txt"
-            placeholder='请输入您要输入的内容'
+            placeholder={t('请输入您要输入的内容')}
             value={content}
             onChange={inputTxt}>
           </TextArea>
           <div className="card-box">
-            <div className="card-title">请上传凭证</div>
+            <div className="card-title">{t('请上传凭证')}</div>
             <div className="card-list">
               {previewImages.map((preview, index) => (
                 <img className="preview-img" key={index} src={preview} alt={`Preview ${index + 1}`} />
@@ -136,7 +138,7 @@ const Voucher: React.FC = (props) => {
             </div>
           </div>
           
-          <div className='submit-btn' onClick={onSubmit}>提交</div>
+          <div className='submit-btn' onClick={onSubmit}>{t('提交')}</div>
         </div>
       </Dialog>
     }

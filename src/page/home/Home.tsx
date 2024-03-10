@@ -1,11 +1,13 @@
 declare const window: any;
 import walletIcon from "@/assets/wallet.png";
-import bgWhole from "@/assets/banner-2-whole.png";
-import downAr from "@/assets/down.png";
+import bgWhole from "@/assets/banner-bg.png";
+import arrow from "@/assets/arrow-down.svg";
+import frame from "@/assets/Frame.svg";
 import ethIcon from "@/assets/eth.png";
 import chatIcon from "@/assets/chat.png";
 import TabBar from "@/components/tabbar";
 import { useHistory } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 // import AuthClient, { generateNonce } from "@walletconnect/auth-client";
 import { useCallback, useEffect, useState } from "react";
 import axiosInstance from "@/service";
@@ -17,8 +19,23 @@ import { callContractMethod, initProvider, initWeb3Connect, signSignature, ercTo
 // 1. Get projectID at https://cloud.walletconnect.com
 // 项目ID
 
+const Language = [
+  {
+    key: "en",
+    value: "English",
+  },
+  {
+    key: "hangugeo",
+    value: "한국어",
+  },
+  {
+    key: "cn",
+    value: "中文",
+  },
+]
 
 export default function Home() {
+  const { t, i18n } = useTranslation();
   const history = useHistory();
 
   const [clickWalletIng, setClickWalletIng] = useState(false);
@@ -30,7 +47,7 @@ export default function Home() {
   const [webContractInstance, setWebContractInstance] = useState<any>()
   const initFn = async () => {
     setClickWalletIng(!(!!window.$$provider))
-    await initProvider();
+    await initProvider(t);
     setClickWalletIng(false)
 
   }
@@ -73,19 +90,19 @@ export default function Home() {
   }
   //  签名[]
   const signAction = async () => {
-    const { address, web3 } = await initWeb3Connect();
+    const { address, web3 } = await initWeb3Connect(t);
     setWebContractInstance({
-      contractInstance: callContractMethod(),
-      tokenContractInstance: ercTokenContractInstance(),
+      contractInstance: callContractMethod(t),
+      tokenContractInstance: ercTokenContractInstance(t),
       web3
     })
 
-    const signature = await signSignature(address);
+    const signature = await signSignature(address, t);
     console.log('signaturesignature', signature)
     if (signature) {
       setAddress(address);
       localStorage.setItem('signature', signature)
-      message.success('签名成功');
+      message.success(t('签名成功'));
       getUserInfo();
     }
 
@@ -98,11 +115,11 @@ export default function Home() {
     await webContractInstance.tokenContractInstance.methods.approve(Op_Contract_Address, totalPrice).send({ from: address })
 
      if( webContractInstance.contractInstance){
-      message.loading('等待钱包确认')
+      message.loading(t('等待钱包确认'))
       webContractInstance.contractInstance.methods.exchange(num, unitPrice, totalPrice, timestamp, Buffer.from(signature, 'hex')).send({ from: address })
       .then(function (result: any) {
         console.log("方法调用结果：", result);
-        message.success('兑换成功')
+        message.success(t('兑换成功'))
       })
       .catch(function (error: any) {
         console.error("调用方法时出错：", error);
@@ -194,12 +211,42 @@ export default function Home() {
   // }, [client]);
 
 
+  const [ toggle, setToggle ] = useState(false)
+  const changeLanguage = (lng: string) => {
+    console.log(lng)
+    i18n.changeLanguage(lng);
+  };
+
   return (
     <div className="home-box">
       <div className="top-box">
         <div className="header-box">
           <span className="title" >
-            签名HOME</span>
+           {t('签名HOME')}
+          </span>
+          <span className="wallet-box language" onClick={() => {
+            setToggle(!toggle)
+          }}>
+            <img
+              draggable="false"
+              className="left-icon"
+              src={frame}
+              alt=""
+            />
+            <img
+              draggable="false"
+              className={`left-icon arrow-icon ${toggle ? 'arrow-icon-up': ''}`}
+              src={arrow}
+              alt=""
+            />
+            {
+              toggle ?  <div className="lang-box">
+                {
+                  Language.map(item => <div key={item.key} onClick={() => changeLanguage(item.key)}>{item.value}</div>)
+                }
+              </div> : null
+            }
+          </span>
           <span className={`wallet-box  ${clickWalletIng ? ' isConnecting' : ''}`} onClick={() => {
             if (!address) {
               signAction()
@@ -213,12 +260,13 @@ export default function Home() {
             />
             <span className="text">{address ? `${address.slice(0, 4)}....${address.slice(-4)}` : 'login'}</span>
           </span>
+          
         </div>
         <div className="banner-box">
           <div className="banner-box-1">
-            <div className="des">当前价格</div>
+            <div className="des">{t('当前价格') }</div>
             <div className="price">1U = {Number(1 / coefficient).toFixed(4)} CHAT</div>
-            <div className="btn-box">查看K线</div>
+            <div className="btn-box">{t('查看K线')}</div>
           </div>
           <div
             className="banner-box-2"
@@ -227,11 +275,11 @@ export default function Home() {
             }}
           >
             <img src={bgWhole} alt="" className="bg" />
-
+            <div className="banner-tips">{t('做任务免费领取Chat')}</div>
           </div>
         </div>
         <div className="body-box">
-          <div className="sub-title">购买代币</div>
+          <div className="sub-title">{t('购买代币')}</div>
         </div>
       </div>
 
@@ -285,7 +333,7 @@ export default function Home() {
           {
             (chatNumber > 0 && usdtNumber > 0) ? <div className="footer-btn" onClick={
               exchangeChatCoin
-            }>兑换</div> : <div className="footer-btn disabled">兑换</div>
+            }>{t('兑换')}</div> : <div className="footer-btn disabled">{t('兑换')}</div>
           }
 
 
