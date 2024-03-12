@@ -3,7 +3,7 @@ import walletIcon from "@/assets/wallet.png";
 import bgWhole from "@/assets/banner-bg.png";
 import arrow from "@/assets/arrow-down.svg";
 import frame from "@/assets/Frame.svg";
-import ethIcon from "@/assets/eth.png";
+import usdtIcon from "@/assets/usdt.png";
 import chatIcon from "@/assets/chat.png";
 import TabBar from "@/components/tabbar";
 import { useHistory } from "react-router-dom";
@@ -315,7 +315,7 @@ export default function Home() {
           </div>
         </div>
         <div className="icon-item-box no-bottom">
-          <img src={ethIcon} alt="" className="left-icon" />
+          <img src={usdtIcon} alt="" className="left-icon" />
           <div className="middle-box">
             <div className="name">
               <span>USDT</span>
