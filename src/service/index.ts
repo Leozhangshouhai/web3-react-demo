@@ -3,8 +3,6 @@ import Axios from 'axios';
 import { message } from 'antd';
 // @ts-ignore  
 import Qs from 'qs'
-import { showMessage } from '@/store/globalSlice';
-import { store } from '@/store'
 
 let baseURL='';
 let loadingKey="loadingKey"
@@ -45,15 +43,7 @@ axiosInstance.interceptors.response.use(response => {
   return response.data;
 }, error => {
   message.destroy(loadingKey)
-  switch (error?.response?.status) {
-    case 401:
-     
-      break;
-    case 502:
-      store.dispatch(showMessage('System is updating, please refresh and try again later'));
-    default:
-      break;
-  }
+ 
   return Promise.reject(error)
 })
 

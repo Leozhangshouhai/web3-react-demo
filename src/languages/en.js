@@ -33,6 +33,24 @@ const en = {
   提交凭证: 'Submit Proof',
   登录: 'Login',
   即将开放: 'Coming Soon',
-  任务已完成: 'Task completed'
+  任务已完成: 'Task completed',
+  "-999":"System error, please contact the administrator.",
+  "-1":"Please link your wallet and refresh the page.",
+  "-2":"Wrong address of wallet.",
+  "-3":"The parameter must be json. ",
+  "-4":"Request parameter missing. ",
+  "-5":"Request parameter error. ",
+  "-6":"Request method exception. ",
+  "10000":"Signed in today. ",
+  "10001":"The latest number of withdrawals cannot be less than 10. ",
+  "10003":"There is not enough amount to withdraw cash. ",
+  "10004":"Withdrawal exception. Please try again later.",
+  "10005":"There is an exception in getting the Bitget price information. Please try again later. ",
+  "10006":"You have followed Twitter.",
+  "10007":"Call Twitter exception. Please try again later.",
+  "10008":"Task ID error. ",
+  "10009":"Task credential picture cannot be empty. ",
+  "10010":"Task credential picture type error.",
+  "10011":"Task credential submission has reached the upper limit"
 }
 export default  en

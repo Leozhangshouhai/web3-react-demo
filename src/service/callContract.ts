@@ -63,7 +63,7 @@ export async function signSignature(account:any, t:Function) {
   if(!address) return ;
   const web3=window.$$web3;
   const result =await  web3.eth.personal.sign(messageKey, address, "").catch(()=>{
-      message.error('result')
+   
       return ''
     })
     console.log('------resultresultresult-------',result);

@@ -41,7 +41,7 @@ export default function Home() {
       localStorage.setItem('userInfo', JSON.stringify(obj))
       message.success(t('签到成功'))
     } else {
-      message.error(result.message)
+      message.error(t(`${result.code}`))
     }
   }
 
@@ -65,7 +65,7 @@ export default function Home() {
         message.success(t('任务已完成'))
       }
     } else {
-      message.error(res.message)
+      message.error(t(`${res.code}`))
     }
   }
 
@@ -88,7 +88,7 @@ export default function Home() {
     if (+res.code === 0) {
       window.location.href = res.data
     } else {
-      message.error(res.message)
+      message.error(t(`${res.code}`))
     }
   }
 

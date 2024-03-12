@@ -84,7 +84,7 @@ const Voucher: React.FC = (props) => {
       message.success(t('提交成功'))
       setDialog(false)
     }else {
-      message.error(msg)
+      message.error(t(`${code}`))
     }
   }
 
