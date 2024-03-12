@@ -9,6 +9,7 @@ import { getTaskList, submitTask } from '@/service/api'
 import chat from "@/assets/chat.png"
 import addIcon from '@/assets/add-icon.png'
 import { useTranslation } from 'react-i18next';
+import Img_close from '@/assets/Crop16@2x.png'
 
 const { TextArea } = Input;
 
@@ -87,6 +88,14 @@ const Voucher: React.FC = (props) => {
     }
   }
 
+  const [previewDialog, setPreviewDialog] = useState(false)
+  const [previewUrl, setPreviewUrl] = useState('')
+  const toPreview = (img:any) => {
+    console.log(img)
+    setPreviewDialog(true)
+    setPreviewUrl(img)
+  }
+
   return <div className="voucher-content">
    { list.length ? <div className="sub-title">{t('提交凭证')}</div> : null }  
     <div className="voucher-wrap">
@@ -107,7 +116,7 @@ const Voucher: React.FC = (props) => {
               </div>
               <div className="card-list">
                 {
-                  item.imgUrl.map((img:string) => <img key={img} className="card-item" src={img} alt="" />)
+                  item.imgUrl.map((img:string) => <img key={img} onClick={() => toPreview(img)} className="card-item" src={img} alt="" />)
                 }
               </div>
               <div className="desc">{item.desc}</div>
@@ -129,7 +138,7 @@ const Voucher: React.FC = (props) => {
             <div className="card-title">{t('请上传凭证')}</div>
             <div className="card-list">
               {previewImages.map((preview, index) => (
-                <img className="preview-img" key={index} src={preview} alt={`Preview ${index + 1}`} />
+                <img className="preview-img"  key={index} src={preview} alt={`Preview ${index + 1}`} />
               ))}
               <label className="select-label" htmlFor="imageInput">
                 <img className="add-icon" src={addIcon} alt="" />
@@ -141,6 +150,13 @@ const Voucher: React.FC = (props) => {
           <div className='submit-btn' onClick={onSubmit}>{t('提交')}</div>
         </div>
       </Dialog>
+    }
+
+    {
+      previewDialog ? <div className="preview-dialog">
+        <img className="preview-close" onClick={() => setPreviewDialog(false)} src={Img_close} alt="" />
+        <img className="preview-img" src={previewUrl} alt="" />
+      </div> : null
     }
   </div>
 }
